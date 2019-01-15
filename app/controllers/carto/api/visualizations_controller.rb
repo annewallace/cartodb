@@ -138,6 +138,11 @@ module Carto
       end
 
       def add_like
+
+        if current_viewer.has_feature_flag?('new-dashboard-feature') && !@visualization.has_read_permission?(current_viewer)
+          render(text: "You can't favourite a visualization you dont have access to", status: 400)
+        end
+
         current_viewer_id = current_viewer.id
 
         @visualization.add_like_from(current_viewer_id)
@@ -159,6 +164,10 @@ module Carto
       end
 
       def remove_like
+        if current_viewer.has_feature_flag?('new-dashboard-feature') && !@visualization.has_read_permission?(current_viewer)
+          render(text: "You can't remove favourite to a visualization you dont have access to", status: 400)
+        end
+
         current_viewer_id = current_viewer.id
 
         @visualization.remove_like_from(current_viewer_id)
