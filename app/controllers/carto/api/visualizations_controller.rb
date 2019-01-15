@@ -147,11 +147,13 @@ module Carto
 
         @visualization.add_like_from(current_viewer_id)
 
-        unless @visualization.is_owner?(current_viewer)
-          protocol = request.protocol.sub('://', '')
-          vis_url =
-            Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(@visualization, protocol, 600, 300)
-          @visualization.send_like_email(current_viewer, vis_url)
+        if !current_viewer.has_feature_flag?('new-dashboard-feature')
+          unless @visualization.is_owner?(current_viewer)
+            protocol = request.protocol.sub('://', '')
+            vis_url =
+              Carto::StaticMapsURLHelper.new.url_for_static_map_with_visualization(@visualization, protocol, 600, 300)
+            @visualization.send_like_email(current_viewer, vis_url)
+          end
         end
 
         render_jsonp(
